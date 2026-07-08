@@ -5,14 +5,10 @@ import Image from "next/image"
 import couple from "@/assets/couple.jpeg"
 import floralPattern from "@/assets/v782-adj-46.jpg"
 import localFont from "next/font/local"
-import { gsap } from "gsap"
-import { useGSAP } from '@gsap/react'
-import {SplitText} from "gsap/SplitText"
 import {EngagementCountdown} from "@/componets/EngagementCountdown";
 import {EngagementTimeline} from "@/componets/EngagementTimeline";
 import {InvitationGenerator} from "@/componets/InvitationGenerator";
 
-gsap.registerPlugin(useGSAP, SplitText)
 const mainFonts = localFont({
     src: "../assets/PlaywriteHU-Regular.ttf"
 })
@@ -22,23 +18,6 @@ const maellenFonts = localFont({
 
 export default function Home() {
     const detailsRef = useRef<HTMLDivElement>(null)
-
-    useGSAP(()=>{
-        const titleSplit = new SplitText('.title',{type: 'chars, words'})
-        gsap.from(titleSplit.words, {
-            yPercent: 80,
-            duration: 1.8,
-            ease: 'power2.out',
-            stagger: 0.2,
-        })
-        const nameSplit = new SplitText('.name',{type: 'chars, words'})
-        gsap.from(nameSplit.words, {
-            yPercent: 80,
-            duration: 1.8,
-            ease: 'power2.out',
-            stagger: 0.2,
-        })
-    },[]);
 
     const scrollToDetails = () => {
         detailsRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -51,7 +30,6 @@ export default function Home() {
             <div className="relative z-10 flex min-h-screen items-center justify-center py-2 px-4 overflow-hidden">
                 <div className="relative w-full h-full max-w-125 mx-auto">
 
-                    {/* Outer frame */}
                     <div className="relative border border-[#8a7f76] p-2">
                         <div className="relative border border-[#8a7f76] p-4">
 
@@ -65,7 +43,6 @@ export default function Home() {
                                     className="object-cover object-top"
                                 />
 
-                                {/* The overlay gradient that fades to the background color */}
                                 <div className="absolute inset-0 bg-linear-to-t from-[#EDE8E2]/20 via-transparent to-transparent points-80"
                                      style={{
                                          background: 'linear-gradient(to top, #EDE8E2 0%, rgba(237, 232, 226, 0) 45%)'
@@ -73,7 +50,6 @@ export default function Home() {
                                 />
                             </div>
 
-                            {/* Names block, overlapping the fade */}
                             <div className="relative -mt-24 flex flex-col items-center text-center px-4 pb-2">
 
                                 {/* Rings icon */}
@@ -92,14 +68,13 @@ export default function Home() {
                                 </h2>
 
                                 <p className="mt-4 text-sm md:text-base tracking-[0.3em] text-[#8a7f76]">
-                                    WEDDING INVITATION
+                                    WARMLY INVITED
                                 </p>
                             </div>
 
                         </div>
                     </div>
 
-                    {/* CTA button */}
                     <div className="flex justify-center mt-8">
                         <button
                             onClick={scrollToDetails}
@@ -111,20 +86,23 @@ export default function Home() {
 
                 </div>
             </div>
+
             {/* Section 2: Contain */}
             <div
                 ref={detailsRef}
-                className="relative flex flex-col min-h-screen items-center justify-center overflow-hidden bg-[#FBFBFB]">
+                className="relative flex flex-col min-h-screen items-center justify-center overflow-hidden bg-[#FBFBFB] px-4 py-12 sm:px-6 md:px-0 md:py-0">
                 <div className="absolute inset-0 z-0 pointer-events-none">
                     <Image
                         src={floralPattern}
                         alt=""
                         fill
-                        className="object-contain md:object-cover object-center opacity-40"
+                        sizes="100vw"
+                        className="object-cover object-center opacity-30 md:opacity-40"
+                        priority={false}
                     />
                 </div>
 
-                <div className="relative z-10 flex flex-col w-full items-center justify-center">
+                <div className="relative z-10 flex flex-col w-full items-center justify-center gap-10 sm:gap-14 md:gap-20 max-w-screen-md mx-auto">
                     <EngagementCountdown />
                     <EngagementTimeline />
                     <InvitationGenerator />
