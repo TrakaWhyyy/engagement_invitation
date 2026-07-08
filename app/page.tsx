@@ -60,11 +60,11 @@ export default function Home() {
                                 </svg>
 
                                 <h2 className={`text-3xl md:text-4xl tracking-[0.15em] text-[#5b5049] ${mainFonts.className}`}>
-                                    HIMAYA
+                                    DEEPANE
                                 </h2>
                                 <span className={`text-xl text-[#8a7f76] -my-1 ${maellenFonts.className}`}>and</span>
                                 <h2 className={`text-3xl md:text-4xl tracking-[0.15em] text-[#5b5049] ${mainFonts.className}`}>
-                                    DEEPANE
+                                    HIMAYA
                                 </h2>
 
                                 <p className="mt-4 text-sm md:text-base tracking-[0.3em] text-[#8a7f76]">
