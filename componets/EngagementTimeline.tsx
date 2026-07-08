@@ -58,13 +58,13 @@ export const EngagementTimeline: React.FC = () => {
     }, []);
 
     return (
-        <div className="max-w-xl mx-auto p-6 my-6 bg-white rounded-2xl shadow-sm border border-slate-100">
-            <h2 className={`${beautifulFonts.className} text-xl sm:text-2xl font-serif font-semibold text-slate-800 mb-8 text-center tracking-wide`}>
+        <div className="w-4/5 md:max-w-xl mx-auto p-4 sm:p-6 my-4 sm:my-6 bg-white rounded-2xl shadow-sm border border-slate-100">
+            <h2 className={`${beautifulFonts.className} text-lg sm:text-2xl font-serif font-semibold text-slate-800 mb-6 sm:mb-8 text-center tracking-wide`}>
                 Event Schedule
             </h2>
 
             {/* The Vertical Timeline Track */}
-            <div className="relative border-l-2 border-yellow-300 ml-3 md:ml-6 pl-6 space-y-8">
+            <div className="relative border-l-2 border-yellow-300 ml-2 sm:ml-3 md:ml-6 pl-4 sm:pl-6 space-y-6 sm:space-y-8">
                 {engagementEvents.map((event) => {
                     // Dynamic status check: True if event time is earlier than right now
                     const isPassed = isBefore(event.dateTime, now);
@@ -73,7 +73,7 @@ export const EngagementTimeline: React.FC = () => {
                         <div key={event.id} className="relative group">
                             {/* Timeline Indicator Node */}
                             <div
-                                className={`absolute -left-8 top-1.5 size-5 rounded-full border-4 flex items-center justify-center transition-all duration-300 ${
+                                className={`absolute -left-6 sm:-left-8 top-2 sm:top-1.5 size-4 sm:size-5 rounded-full border-4 flex items-center justify-center transition-all duration-300 ${
                                     isPassed
                                         ? 'bg-yellow-500 border-yellow-100 scale-110 shadow-sm' // Active/Passed state
                                         : 'bg-white border-yellow-100 group-hover:border-yellow-300' // Future state
@@ -81,18 +81,18 @@ export const EngagementTimeline: React.FC = () => {
                             />
 
                             {/* Event Block Card */}
-                            <div className={`p-4 rounded-xl border transition-all ${
+                            <div className={`p-3 sm:p-4 rounded-xl border transition-all ${
                                 isPassed
                                     ? 'bg-yellow-50/40 border-yellow-100/60' // Passed state visual style
                                     : 'bg-white border-slate-100 group-hover:shadow-md' // Upcoming state visual style
                             }`}>
-                                <time className={`text-sm font-semibold tracking-wide ${isPassed ? 'text-yellow-600' : 'text-slate-400'}`}>
+                                <time className={`text-xs sm:text-sm font-semibold tracking-wide ${isPassed ? 'text-yellow-600' : 'text-slate-400'}`}>
                                     {event.time}
                                 </time>
-                                <h3 className={`mt-0.5 text-lg font-semibold ${isPassed ? 'text-yellow-900/80' : 'text-slate-800'}`}>
+                                <h3 className={`mt-0.5 text-base sm:text-lg font-semibold ${isPassed ? 'text-yellow-900/80' : 'text-slate-800'}`}>
                                     {event.title}
                                 </h3>
-                                <p className={`mt-1 text-sm leading-relaxed ${isPassed ? 'text-yellow-800/60' : 'text-slate-600'}`}>
+                                <p className={`mt-1 text-xs sm:text-sm leading-relaxed ${isPassed ? 'text-yellow-800/60' : 'text-slate-600'}`}>
                                     {event.description}
                                 </p>
                             </div>

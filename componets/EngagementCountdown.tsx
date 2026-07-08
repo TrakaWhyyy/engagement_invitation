@@ -60,7 +60,7 @@ export const EngagementCountdown: React.FC = () => {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center bg-[#FBEF76]/30 p-8 sm:p-10 rounded-2xl shadow-lg max-w-xl mx-auto my-10 text-center border border-[#FFD400] backdrop-blur-sm">
+        <div className="flex flex-col items-center justify-center bg-[#FBEF76]/30 p-8 sm:p-10 rounded-2xl shadow-lg w-4/5 md:max-w-xl mx-auto my-10 text-center border border-[#FFD400] backdrop-blur-sm">
             <h1 className={`${beautifulFonts.className} text-2xl sm:text-3xl font-serif font-semibold text-slate-800 mb-8 tracking-wide`}>
                 Counting Down to Our Engagement
             </h1>
@@ -73,7 +73,7 @@ export const EngagementCountdown: React.FC = () => {
                     { label: 'Secs', value: timeLeft.seconds, pulse: true }
                 ].map((item) => (
                     <div key={item.label} className="flex flex-col items-center bg-white p-3 sm:p-4 rounded-xl border border-rose-100/80 shadow-sm transition-transform hover:scale-105">
-            <span className={`text-2xl sm:text-4xl font-mono font-bold text-rose-600 tabular-nums ${item.pulse ? 'animate-pulse' : ''}`}>
+            <span className={`text-2xl sm:text-4xl font-mono font-bold text-yellow-600 tabular-nums ${item.pulse ? 'animate-pulse' : ''}`}>
               {formatNumber(item.value)}
             </span>
                         <span className="text-[10px] sm:text-xs font-medium text-slate-500 uppercase tracking-widest mt-1">
