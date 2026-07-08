@@ -5,12 +5,17 @@ export const InvitationGenerator: React.FC = () => {
     const [guestName, setGuestName] = useState<string>('');
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
-    // Hardcoded event details matching your timeline
+    // Event details matching the reference invitation
     const eventDetails = {
-        couple: "Sophia & James",
-        date: "October 15, 2026",
-        time: "06:15 PM",
-        venue: "Aloft Panadura Grand Ballroom"
+        hosts: "Together with Mr. & Mrs. Silva and Mr. & Mrs. Lanarolle",
+        bride: { first: "HIMAYA", last: "Medini" },
+        groom: { first: "DEEPANA", last: "Lanarolle" },
+        month: "JULY",
+        day: "30",
+        year: "2026",
+        time: "At 9 O'clock in the morning",
+        venueName: "The Barnhouse Studio",
+        venueAddress: "155/9, 2nd Lane, Galpoththa Rd, Panadura 12500",
     };
 
     const handleDownloadPDF = () => {
@@ -21,7 +26,7 @@ export const InvitationGenerator: React.FC = () => {
 
         setIsGenerating(true);
 
-        // 1. Create a single-page portrait PDF document (Standard A5 Size is great for invitations)
+        // Portrait A5 card
         const doc = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
@@ -30,80 +35,210 @@ export const InvitationGenerator: React.FC = () => {
 
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
+        const centerX = pageWidth / 2;
 
-        // 2. Background Paint (Vintage Warm Ivory/White)
-        doc.setFillColor(255, 253, 245);
+        const ink = { r: 35, g: 35, b: 35 };
+        const softGrey = { r: 90, g: 90, b: 90 };
+        const gold = { r: 196, g: 149, b: 60 };
+
+        // --- Consistent vertical rhythm system ---
+        // A single line-height multiplier drives per-line spacing so gaps
+        // scale predictably with font size, and a small set of named gaps
+        // (instead of arbitrary numbers) is used between sections.
+        const LINE_HEIGHT = 1.15;
+        const mmPerPt = 0.3527;
+        const lineStep = (fontSizePt: number) => fontSizePt * mmPerPt * LINE_HEIGHT;
+
+        const BASE_GAP = 4; // mm
+        const GAP = {
+            tight: BASE_GAP * 0.5,   // 2mm  - within a tightly related pair
+            small: BASE_GAP * 1,     // 4mm  - between closely related lines
+            medium: BASE_GAP * 2,    // 8mm  - between related sections
+            large: BASE_GAP * 3,     // 12mm - between major blocks
+        };
+
+        // Background
+        doc.setFillColor(255, 255, 255);
         doc.rect(0, 0, pageWidth, pageHeight, 'F');
 
-        // 3. Draw Decorative Vintage Double Border (Gold Palette)
-        const goldColor = { r: 212, g: 175, b: 55 }; // Traditional Gold
-        const darkCharcoal = { r: 44, g: 44, b: 44 };  // Vintage Ink Black
+        let y = 14;
 
-        // Outer Gold Border
-        doc.setDrawColor(goldColor.r, goldColor.g, goldColor.b);
-        doc.setLineWidth(0.8);
-        doc.rect(8, 8, pageWidth - 16, pageHeight - 16);
-
-        // Inner Gold Border (Creates classic vintage frame layout)
-        doc.setLineWidth(0.3);
-        doc.rect(10, 10, pageWidth - 20, pageHeight - 20);
-
-        // 4. Set Typographic Layouts
-        doc.setTextColor(darkCharcoal.r, darkCharcoal.g, darkCharcoal.b);
-
-        // Header Line
-        doc.setFont('times', 'italic');
-        doc.setFontSize(14);
-        doc.text("You are warmly invited to the", pageWidth / 2, 32, { align: 'center' });
-
-        doc.setFont('times', 'normal');
-        doc.setFontSize(15);
-        doc.text("Engagement Celebration of", pageWidth / 2, 42, { align: 'center' });
-
-        // Couple Names (Gold Highlight)
-        doc.setTextColor(goldColor.r, goldColor.g, goldColor.b);
-        doc.setFont('times', 'bold');
-        doc.setFontSize(28);
-        doc.text(eventDetails.couple, pageWidth / 2, 60, { align: 'center' });
-
-        // Event logistics text
-        doc.setTextColor(darkCharcoal.r, darkCharcoal.g, darkCharcoal.b);
-        doc.setFont('times', 'normal');
-        doc.setFontSize(12);
-        doc.text(`${eventDetails.date}  |  ${eventDetails.time}`, pageWidth / 2, 76, { align: 'center' });
-
+        // --- Hosts line ---
+        doc.setTextColor(ink.r, ink.g, ink.b);
         doc.setFont('times', 'italic');
         doc.setFontSize(11);
-        doc.text(eventDetails.venue, pageWidth / 2, 84, { align: 'center' });
+        const hostLines = doc.splitTextToSize(eventDetails.hosts, pageWidth - 30);
+        hostLines.forEach((line: string) => {
+            doc.text(line, centerX, y, { align: 'center' });
+            y += lineStep(11);
+        });
 
-        // 5. Dynamic Guest Section Frame Box (Vintage Crest style frame)
-        doc.setFillColor(255, 255, 255); // Pure white inside text box
-        doc.setDrawColor(goldColor.r, goldColor.g, goldColor.b);
+        y += GAP.medium;
+
+        // --- Script "Cordially requesting..." line (approximated with italic serif) ---
+        doc.setFont('times', 'italic');
+        doc.setFontSize(13.5);
+        doc.text("Cordially requesting the honour of your presence", centerX, y, { align: 'center' });
+        y += lineStep(13.5) + GAP.tight;
+
+        // --- Regular explanatory lines ---
+        doc.setFont('times', 'normal');
+        doc.setFontSize(11.5);
+        doc.text("and company, as their beloved children", centerX, y, { align: 'center' });
+        y += lineStep(11.5);
+        doc.text("join in marriage", centerX, y, { align: 'center' });
+        y += lineStep(11.5) + GAP.medium;
+
+        // --- Bride name (letter-spaced) ---
+        const drawSpacedText = (text: string, yPos: number, fontSize: number) => {
+            doc.setFontSize(fontSize);
+            const letters = text.split('');
+            const spacing = fontSize * 0.32;
+            const widths = letters.map((l) => doc.getTextWidth(l));
+            const totalWidth = widths.reduce((a, b) => a + b, 0) + spacing * (letters.length - 1);
+            let x = centerX - totalWidth / 2;
+            letters.forEach((letter, i) => {
+                doc.text(letter, x, yPos);
+                x += widths[i] + spacing;
+            });
+        };
+
+        doc.setFont('times', 'bold');
+        doc.setTextColor(ink.r, ink.g, ink.b);
+        drawSpacedText(eventDetails.bride.first, y, 21);
+        y += lineStep(21) - GAP.tight;
+
+        doc.setFont('times', 'italic');
+        doc.setFontSize(12);
+        doc.text(eventDetails.bride.last, centerX, y, { align: 'center' });
+        y += lineStep(12) + GAP.small;
+
+        // --- "and" script accent ---
+        doc.setFont('times', 'italic');
+        doc.setFontSize(16);
+        doc.text("and", centerX, y, { align: 'center' });
+        y += lineStep(16) + GAP.small;
+
+        // --- Groom name (letter-spaced) ---
+        doc.setFont('times', 'bold');
+        doc.setFontSize(21);
+        drawSpacedText(eventDetails.groom.first, y, 21);
+        y += lineStep(21) - GAP.tight;
+
+        doc.setFont('times', 'italic');
+        doc.setFontSize(12);
+        doc.text(eventDetails.groom.last, centerX, y, { align: 'center' });
+        y += lineStep(12) + GAP.medium;
+
+        // --- Date line: JULY | 30 | 2026 ---
+        const monthText = eventDetails.month;
+        const dayText = eventDetails.day;
+        const yearText = eventDetails.year;
+
+        doc.setFont('times', 'normal');
+        doc.setFontSize(13);
+        const monthWidth = doc.getTextWidth(monthText);
+
+        doc.setFont('times', 'bold');
+        doc.setFontSize(26);
+        const dayWidth = doc.getTextWidth(dayText);
+
+        doc.setFont('times', 'normal');
+        doc.setFontSize(13);
+        const yearWidth = doc.getTextWidth(yearText);
+
+        const dividerGap = 8;
+        const dividerWidth = 0.3;
+        const totalDateWidth = monthWidth + dividerGap + dividerWidth + dividerGap + dayWidth + dividerGap + dividerWidth + dividerGap + yearWidth;
+        let dateX = centerX - totalDateWidth / 2;
+        const dateBaselineY = y;
+
+        doc.setFont('times', 'normal');
+        doc.setFontSize(13);
+        doc.text(monthText, dateX, dateBaselineY);
+        dateX += monthWidth + dividerGap;
+
+        doc.setDrawColor(ink.r, ink.g, ink.b);
         doc.setLineWidth(0.4);
-        doc.rect(20, 100, pageWidth - 40, 22, 'FD');
+        doc.line(dateX, dateBaselineY - 6, dateX, dateBaselineY + 1);
+        dateX += dividerGap;
 
-        // Guest Name Text
-        doc.setTextColor(darkCharcoal.r, darkCharcoal.g, darkCharcoal.b);
+        doc.setFont('times', 'bold');
+        doc.setFontSize(26);
+        doc.text(dayText, dateX, dateBaselineY + 2);
+        dateX += dayWidth + dividerGap;
+
+        doc.setLineWidth(0.4);
+        doc.line(dateX, dateBaselineY - 6, dateX, dateBaselineY + 1);
+        dateX += dividerGap;
+
+        doc.setFont('times', 'normal');
+        doc.setFontSize(13);
+        doc.text(yearText, dateX, dateBaselineY);
+
+        y += GAP.large - GAP.tight;
+
+        // --- Time ---
+        doc.setFont('times', 'italic');
+        doc.setFontSize(10.5);
+        doc.text(eventDetails.time, centerX, y, { align: 'center' });
+        y += lineStep(10.5) + GAP.medium;
+
+        doc.setFont('times', 'italic');
+        doc.setFontSize(9.5);
+        doc.setTextColor(softGrey.r, softGrey.g, softGrey.b);
+        doc.text("Invited with love", centerX, y, { align: 'center' });
+        y += lineStep(9.5) + GAP.small;
+
         doc.setFont('times', 'bold');
         doc.setFontSize(14);
-        doc.text(guestName.toUpperCase(), pageWidth / 2, 113, { align: 'center' });
+        doc.setTextColor(ink.r, ink.g, ink.b);
+        doc.text(guestName.toUpperCase(), centerX, y, { align: 'center' });
+        y += lineStep(14) + GAP.small;
 
-        // Footnote signature
+        // --- Dotted divider ---
+        doc.setDrawColor(ink.r, ink.g, ink.b);
+        doc.setLineWidth(0.35);
+        doc.setLineDashPattern([0.6, 1], 0);
+        doc.line(14, y, pageWidth - 14, y);
+        doc.setLineDashPattern([], 0);
+        y += GAP.medium + GAP.tight;
+
+        // --- Venue ---
+        doc.setFont('times', 'bold');
+        doc.setFontSize(12.5);
+        doc.setTextColor(ink.r, ink.g, ink.b);
+        drawSpacedText(eventDetails.venueName, y, 12.5);
+        y += lineStep(12.5) + GAP.small;
+
+        doc.setFont('times', 'normal');
+        doc.setFontSize(9.5);
+        doc.setTextColor(softGrey.r, softGrey.g, softGrey.b);
+        doc.text(eventDetails.venueAddress, centerX, y, { align: 'center' });
+        y += lineStep(9.5) + GAP.large;
+
+        // --- Warmly Invited (gold script accent) ---
         doc.setFont('times', 'italic');
-        doc.setFontSize(9);
-        doc.setTextColor(140, 140, 140);
-        doc.text("Please present this digital copy upon entry", pageWidth / 2, 192, { align: 'center' });
+        doc.setFontSize(17);
+        doc.setTextColor(gold.r, gold.g, gold.b);
+        doc.text("Warmly Invited", centerX, y, { align: 'center' });
+        y += lineStep(17) + GAP.medium;
 
-        // Save and execute local download action
+        // --- Guest name block (replaces QR code area) ---
+        doc.setDrawColor(gold.r, gold.g, gold.b);
+        doc.setLineWidth(0.3);
+        doc.line(centerX - 30, y, centerX + 30, y);
+        y += GAP.small + GAP.tight;
+
+        // Save
         const sanitizedName = guestName.toLowerCase().replace(/[^a-z0-9]/g, '_');
-        doc.save(`engagement_invitation_${sanitizedName}.pdf`);
+        doc.save(`wedding_invitation_${sanitizedName}.pdf`);
 
         setIsGenerating(false);
     };
 
     return (
         <div className="flex flex-col md:flex-row items-center justify-center max-w-4xl mx-auto my-10 p-6 gap-8 font-sans">
-            {/* RIGHT PANEL: Configuration Inputs */}
             <div className="w-full max-w-md bg-white p-6 sm:p-8 rounded-2xl shadow-md border border-slate-100 flex flex-col justify-center">
                 <h2 className="text-xl sm:text-2xl font-serif font-semibold text-slate-800 mb-2">
                     Get Your Invitation Card
