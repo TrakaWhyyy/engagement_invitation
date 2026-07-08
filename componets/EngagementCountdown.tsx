@@ -16,7 +16,7 @@ const beautifulFonts = localFont({
 })
 
 export const EngagementCountdown: React.FC = () => {
-    const TARGET_DATE = new Date('2026-7-30T18:00:00');
+    const TARGET_DATE = new Date('2026-07-30T18:00:00');
 
     const calculateTimeLeft = (): TimeLeft => {
         const now = new Date();
